@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Experience {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  location    String
+  image       String
+  price       Float
+  rating      Float   @default(4.5)
+  duration    String
+  groupSize   String
+  guide       String
+  equipment   String
+  minAge      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings    Booking[]
+}
+
+model Booking {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  referenceId   String   @unique
+  experienceId  String   @db.ObjectId
+  experience    Experience @relation(fields: [experienceId], references: [id])
+  
+  fullName      String
+  email         String
+  date          DateTime
+  time          String
+  quantity      Int
+  subtotal      Float
+  taxes         Float
+  total         Float
+  promoCode     String?
+  discount      Float   @default(0)
+  
+  status        String  @default("confirmed")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PromoCode {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  code        String   @unique
+  discount    Float
+  description String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
