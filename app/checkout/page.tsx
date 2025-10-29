@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface BookingData {
   experienceId: string
@@ -20,6 +21,7 @@ interface BookingData {
 
 export default function CheckoutPage() {
   const router = useRouter()
+  const { toast } = useToast()
   const [bookingData, setBookingData] = useState<BookingData | null>(null)
   const [formData, setFormData] = useState({
     fullName: "",
@@ -53,13 +55,21 @@ export default function CheckoutPage() {
       setDiscount(Math.min(value, subtotal))
     } catch (_) {
       setDiscount(0)
-      alert("Invalid promo code")
+      toast({
+        variant: "destructive",
+        title: "Invalid promo code",
+        description: "Please check the code and try again.",
+      })
     }
   }
 
   const handlePayment = async () => {
     if (!formData.fullName || !formData.email || !agreed) {
-      alert("Please fill all fields and agree to terms")
+      toast({
+        variant: "destructive",
+        title: "Action required",
+        description: "Please fill all fields and agree to the terms.",
+      })
       return
     }
 
