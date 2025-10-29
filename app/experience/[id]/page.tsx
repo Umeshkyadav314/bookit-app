@@ -1,13 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ChevronLeft } from "lucide-react"
 import { experiences as mockExperiences } from "@/lib/mock-data"
 import BookingSidebar from "@/components/booking-sidebar"
 
-export default function ExperiencePage({ params }: { params: { id: string } }) {
+export default function ExperiencePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [experience, setExperience] = useState<any | null>(null)
   const [selectedDate, setSelectedDate] = useState("Oct 22")
   const [selectedTime, setSelectedTime] = useState("09:00 am")
@@ -17,10 +18,12 @@ export default function ExperiencePage({ params }: { params: { id: string } }) {
     let isMounted = true
     async function load() {
       // fallback to mock first for instant paint
-      const local = mockExperiences.find((e) => e.id === params.id) || null
+      const local = mockExperiences.find((e) => e.id === id) || null
       if (isMounted) setExperience(local)
       try {
-        const res = await fetch(`/api/experiences/${params.id}`)
+        // Only call API if id looks like a Mongo ObjectId
+        if (!/^[a-f0-9]{24}$/i.test(id)) return
+        const res = await fetch(`/api/experiences/${id}`)
         if (res.ok) {
           const data = await res.json()
           if (isMounted && data) setExperience(data)
@@ -33,7 +36,7 @@ export default function ExperiencePage({ params }: { params: { id: string } }) {
     return () => {
       isMounted = false
     }
-  }, [params.id])
+  }, [id])
 
   if (!experience) {
     return <div className="text-center py-12">Loading...</div>
@@ -85,9 +88,8 @@ export default function ExperiencePage({ params }: { params: { id: string } }) {
                   <button
                     key={date}
                     onClick={() => setSelectedDate(date)}
-                    className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${
-                      selectedDate === date ? "bg-primary text-secondary" : "bg-border text-foreground hover:bg-border"
-                    }`}
+                    className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${selectedDate === date ? "bg-primary text-secondary" : "bg-border text-foreground hover:bg-border"
+                      }`}
                   >
                     {date}
                   </button>
@@ -103,9 +105,8 @@ export default function ExperiencePage({ params }: { params: { id: string } }) {
                   <button
                     key={time}
                     onClick={() => setSelectedTime(time)}
-                    className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${
-                      selectedTime === time ? "bg-primary text-secondary" : "bg-border text-foreground hover:bg-border"
-                    }`}
+                    className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-sm sm:text-base ${selectedTime === time ? "bg-primary text-secondary" : "bg-border text-foreground hover:bg-border"
+                      }`}
                   >
                     {time}
                   </button>

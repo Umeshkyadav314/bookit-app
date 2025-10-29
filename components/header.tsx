@@ -3,6 +3,7 @@
 import type React from "react"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useTheme } from "next-themes"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -36,9 +37,14 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 font-bold text-lg sm:text-xl flex-shrink-0">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-secondary text-sm">
-              🗺️
-            </div>
+            <Image
+              src={theme === "dark" ? "/placeholder-logo.svg" : "/placeholder-logo.png"}
+              alt="Highway Delite"
+              width={36}
+              height={36}
+              className="rounded-md border border-border bg-background p-1"
+              priority
+            />
             <span className="hidden sm:inline">Highway Delite</span>
           </Link>
 
@@ -49,7 +55,7 @@ export default function Header() {
                 placeholder="Search experiences"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field text-sm flex-1 rounded-l-lg"
+                className="input-field text-sm flex-1 rounded-l-lg rounded-r-none border-r-0 focus:ring-2 focus:ring-primary"
               />
               <button type="submit" className="btn-primary px-4 rounded-r-lg rounded-l-none text-sm">
                 Search
@@ -90,9 +96,9 @@ export default function Header() {
                 placeholder="Search experiences"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field text-sm flex-1"
+                className="input-field text-sm flex-1 rounded-l-lg rounded-r-none border-r-0"
               />
-              <button type="submit" className="btn-primary px-3 text-sm">
+              <button type="submit" className="btn-primary px-3 text-sm rounded-r-lg rounded-l-none">
                 <Search size={18} />
               </button>
             </form>
